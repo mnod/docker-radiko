@@ -19,7 +19,7 @@
 
 workdir=/tmp/`basename $0`
 date=`date '+%Y-%m-%d-%H:%M'`
-playerurl=http://radiko.jp/apps/js/flash/myplayer-release.swf
+playerurl=http://radiko.jp/player/swf/player_4.1.0.00.swf
 streamserver=rtmpe://f-radiko.smartstream.ne.jp
 
 playerfile=${workdir}/player.swf
@@ -51,7 +51,7 @@ fi
 # get keydata (need swftool)
 #
 if [ ! -f $keyfile ]; then
-  swfextract -b 12 $playerfile -o $keyfile
+  swfextract -b 14 $playerfile -o $keyfile
 
   if [ ! -f $keyfile ]; then
     echo "failed get keydata"
@@ -66,8 +66,8 @@ test -f ${auth1_fms} && rm -f ${auth1_fms}
 #
 wget -q \
      --header="pragma: no-cache" \
-     --header="X-Radiko-App: pc_ts" \
-     --header="X-Radiko-App-Version: 4.0.0" \
+     --header="X-Radiko-App: pc_1" \
+     --header="X-Radiko-App-Version: 2.0.1" \
      --header="X-Radiko-User: test-stream" \
      --header="X-Radiko-Device: pc" \
      --post-data='\r\n' \
@@ -102,8 +102,8 @@ test -f ${auth2_fms} && rm -f ${auth2_fms}
 #
 wget -q \
      --header="pragma: no-cache" \
-     --header="X-Radiko-App: pc_ts" \
-     --header="X-Radiko-App-Version: 4.0.0" \
+     --header="X-Radiko-App: pc_1" \
+     --header="X-Radiko-App-Version: 2.0.1" \
      --header="X-Radiko-User: test-stream" \
      --header="X-Radiko-Device: pc" \
      --header="X-Radiko-Authtoken: ${authtoken}" \

@@ -106,8 +106,8 @@ wget -q \
      --header="X-Radiko-App-Version: 4.0.0" \
      --header="X-Radiko-User: test-stream" \
      --header="X-Radiko-Device: pc" \
-     --header="X-Radiko-Authtoken: ${authtoken}" \
-     --header="X-Radiko-Partialkey: ${partialkey}" \
+     --header="X-Radiko-AuthToken: ${authtoken}" \
+     --header="X-Radiko-PartialKey: ${partialkey}" \
      --post-data='\r\n' \
      --no-check-certificate \
      -P ${workdir} \

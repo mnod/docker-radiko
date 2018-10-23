@@ -27,12 +27,23 @@ keyfile=${workdir}/authkey.png
 auth1_fms=${workdir}/auth1_fms
 auth2_fms=${workdir}/auth2_fms
 
-if [ $# -ne 2 ]; then
+if [ $# -gt 3 ]; then
   exit 1
 fi
 
 station=$1
 DURATION=`expr $2 \* 60`
+if [ $# -eq 3 ]; then
+  # date --date="2018-12-01T16:00" "+%s"
+  start=$(date --date="$3" "+%s")
+  stop=$(expr ${start} + ${DURATION})
+  starttime=$(date --date="@${start}" "+%Y%m%d%H%M%S")
+  stoptime=$(date --date="@${stop}" "+%Y%m%d%H%M%S")
+  mkdir /mnt
+  filename=/media/recorder/${starttime}_${station}.aac
+fi
+
+
 test -d ${workdir} || mkdir ${workdir}
 
 #
@@ -127,6 +138,7 @@ rm -f ${auth2_fms}
 #
 # rtmpdump
 #
+if [ $# -eq 2 ]; then
 /usr/bin/rtmpdump -v \
          -r "${streamserver}" \
          --playpath "simul-stream.stream" \
@@ -138,3 +150,15 @@ rm -f ${auth2_fms}
          --quiet \
          --stop ${DURATION} | \
 cvlc --sout '#standard{access=http,mux=asf,dst=:8000}' - vlc://quit
+else
+ffmpeg \
+    -loglevel error \
+    -fflags +discardcorrupt \
+    -headers "X-Radiko-Authtoken: ${authtoken}" \
+    -i "https://radiko.jp/v2/api/ts/playlist.m3u8?station_id=${station}&l=15&ft=${starttime}&to=${stoptime}" \
+    -acodec copy \
+    -vn \
+    -bsf:a aac_adtstoasc \
+    ${filename}
+cvlc --sout '#standard{access=http,mux=asf,dst=:8000}' ${filename} vlc://quit
+fi

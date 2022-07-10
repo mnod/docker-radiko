@@ -1,23 +1,19 @@
-From ubuntu:16.04
+From alpine:3.14.2
 
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    software-properties-common \
-    && add-apt-repository ppa:jonathonf/ffmpeg-3 -y \
-    && apt-get update && apt-get install --no-install-recommends -y \
-    wget \
-    rtmpdump \
-    vlc-nox \
-    swftools \
-    ffmpeg \
-&& apt-get clean \
-&& rm -rf /var/lib/apt/lists/*
+RUN set -ex \
+ && apk update \
+ && apk upgrade --available \
+ && apk add python3 git ffmpeg tzdata \
+ && cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
+ && apk del tzdata \
+ && rm -rf /var/cache/apk/*
 
-ADD run.sh /run.sh
-RUN chmod +x /run.sh
-RUN useradd -s /bin/bash -m docker
-RUN mkdir -p /media/recorder && chmod 777 /media/recorder 
+RUN git clone https://gist.github.com/81a309e13e8f89b3e104563a967c6ff1.git radiko \
+ && mv radiko/radiko.py /usr/local/bin/radiko.py \
+ && chmod +x /usr/local/bin/radiko.py \
+ && rm -rf radiko \
+ && adduser -s /bin/sh -D docker
 
-EXPOSE 8000
-
+VOLUME ["/media/recorder"]
 USER docker
-ENTRYPOINT ["/run.sh"]
+ENTRYPOINT ["/usr/local/bin/radiko.py"]
